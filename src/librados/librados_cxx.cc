@@ -1179,6 +1179,22 @@ void librados::IoCtx::dup(const IoCtx& rhs)
   io_ctx_impl->dup(*rhs.io_ctx_impl);
 }
 
+int librados::IoCtx::get_times(std::map<std::string, clock_t >& lrtime, 
+    std::map<std::string, clock_t>& rltime)
+{
+  return io_ctx_impl->get_times(lrtime, rltime);
+}
+
+void librados::IoCtx::new_times()
+{
+  io_ctx_impl->new_times();
+}
+
+void librados::IoCtx::delete_times()
+{
+  io_ctx_impl->delete_times();
+}
+
 int librados::IoCtx::set_auid(uint64_t auid_)
 {
   return -EOPNOTSUPP;

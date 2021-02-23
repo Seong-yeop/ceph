@@ -589,8 +589,10 @@ int librados::IoCtxImpl::write(const object_t& oid, bufferlist& bl,
   ::ObjectOperation op;
   prepare_assert_ops(&op);
   bufferlist mybl;
+  get_time_librados_to_rados(oid.name);
   mybl.substr_of(bl, 0, len);
   op.write(off, mybl);
+  get_time_rados_to_librados(oid.name);
   return operate(oid, &op, NULL);
 }
 
@@ -1363,6 +1365,7 @@ int librados::IoCtxImpl::read(const object_t& oid,
     return -EDOM;
   OID_EVENT_TRACE(oid.name.c_str(), "RADOS_READ_OP_BEGIN");
 
+  get_time_librados_to_rados(oid.name);
   ::ObjectOperation rd;
   prepare_assert_ops(&rd);
   rd.read(off, len, &bl, NULL, NULL);
@@ -1374,6 +1377,7 @@ int librados::IoCtxImpl::read(const object_t& oid,
     ldout(client->cct, 10) << "Returned length " << bl.length()
 	     << " less than original length "<< len << dendl;
   }
+  get_time_rados_to_librados(oid.name);
 
   return bl.length();
 }

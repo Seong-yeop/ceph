@@ -1,6 +1,7 @@
 
 CXX?=g++
-CXX_FLAGS?=-std=c++11 -Wno-unused-parameter -Wall -Wextra -Werror -g
+#CXX_FLAGS?=-std=c++17 -Wno-unused-parameter -Wall -Wextra -Werror -g
+CXX_FLAGS?=-std=c++17 
 CXX_LIBS?=-lrados -lradosstriper
 CXX_INC?=$(LOCAL_LIBRADOS_INC)
 CXX_CC=$(CXX) $(CXX_FLAGS) $(CXX_INC) $(LOCAL_LIBRADOS)
@@ -18,7 +19,7 @@ CEPH_BLD_HOME?=../../build
 LOCAL_LIBRADOS?=-L$(CEPH_BLD_HOME)/lib/ -Wl,-rpath,$(CEPH_BLD_HOME)/lib
 LOCAL_LIBRADOS_INC?=-I$(CEPH_SRC_HOME)/include
 
-all: hello_world_cpp hello_radosstriper_cpp hello_world_c
+all: hello_world_cpp hello_radosstriper_cpp hello_world_c bench
 
 # Build against the system librados instead of the one in the build tree:
 all-system: LOCAL_LIBRADOS=
@@ -34,6 +35,9 @@ hello_radosstriper_cpp: hello_radosstriper.cc
 hello_world_c: hello_world_c.c
 	$(CC_CC) -o hello_world_c hello_world_c.c $(CC_LIBS)
 
+bench: measure_latency.cc
+	$(CXX_CC) -o bench measure_latency.cc rados_io.cpp $(CC_LIBS)
+
 clean:
-	rm -f hello_world_cpp hello_radosstriper_cpp hello_world_c
+	rm -f hello_world_cpp hello_radosstriper_cpp hello_world_c bench
 

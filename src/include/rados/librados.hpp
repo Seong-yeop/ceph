@@ -791,6 +791,13 @@ inline namespace v14_2_0 {
     // Close our pool handle
     void close();
 
+
+    // latency 
+    void new_times();
+    void delete_times();
+    int get_times(std::map<std::string, clock_t>& lrtime,
+        std::map<std::string, clock_t>& rltime);
+
     // deep copy
     void dup(const IoCtx& rhs);
 
