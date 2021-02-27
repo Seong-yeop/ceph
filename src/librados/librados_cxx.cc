@@ -1179,8 +1179,8 @@ void librados::IoCtx::dup(const IoCtx& rhs)
   io_ctx_impl->dup(*rhs.io_ctx_impl);
 }
 
-int librados::IoCtx::get_times(std::map<std::string, clock_t >& lrtime, 
-    std::map<std::string, clock_t>& rltime)
+int librados::IoCtx::get_times(std::unordered_map<std::string, clock_t>& lrtime, 
+    std::unordered_map<std::string, clock_t>& rltime)
 {
   return io_ctx_impl->get_times(lrtime, rltime);
 }

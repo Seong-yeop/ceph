@@ -199,7 +199,7 @@ void rados_io::remove(const string &key)
 	}
 }
 
-size_t rados_io::read_bench(size_t num_op, std::map<std::string, clock_t>& lrtime, std::map<std::string, clock_t>& rltime, size_t io_size) {
+size_t rados_io::read_bench(size_t num_op, std::unordered_map<std::string, clock_t>& lrtime, std::unordered_map<std::string, clock_t>& rltime, size_t io_size) {
   size_t len = 0; 
   ioctx.new_times();
   for (size_t i = 0; i < num_op; i++) {
@@ -210,7 +210,7 @@ size_t rados_io::read_bench(size_t num_op, std::map<std::string, clock_t>& lrtim
   return len;
 }
 
-size_t rados_io::write_bench(size_t num_op, std::map<std::string, clock_t>& lrtime, std::map<std::string, clock_t>& rltime, size_t io_size) {
+size_t rados_io::write_bench(size_t num_op, std::unordered_map<std::string, clock_t>& lrtime, std::unordered_map<std::string, clock_t>& rltime, size_t io_size) {
   size_t len = 0;
   ioctx.new_times();
   for (size_t i = 0; i < num_op; i++) {

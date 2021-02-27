@@ -19,15 +19,15 @@ int main(int argc, const char **argv){
     .flags = 0,
   };
 
-  rados_io rio(ci, "data4");
+  rados_io rio(ci, "data");
   
-  std::map<std::string, clock_t> lrtime;
-  std::map<std::string, clock_t> rltime;
+  std::unordered_map<std::string, clock_t> lrtime;
+  std::unordered_map<std::string, clock_t> rltime;
 
   rio.prepare_bench(IO_SIZE);
 
-  //len = rio.write_bench(100, lrtime, rltime, IO_SIZE); 
-  len = rio.read_bench(100, lrtime, rltime, IO_SIZE); 
+  len = rio.write_bench(1, lrtime, rltime, IO_SIZE); 
+  //len = rio.read_bench(100, lrtime, rltime, IO_SIZE); 
   std::cout << "Total Write: " << len << '\n';
   
   rio.close_bench();

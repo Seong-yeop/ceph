@@ -306,6 +306,7 @@ OSDService::OSDService(OSD *osd, ceph::async::io_context_pool& poolctx) :
   boot_epoch(0), up_epoch(0), bind_epoch(0)
 {
   objecter->init();
+  init_times(); // for measuring latency
 
   for (int i = 0; i < m_objecter_finishers; i++) {
     ostringstream str;

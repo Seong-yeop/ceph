@@ -4,10 +4,12 @@
 #include <string>
 #include <list>
 #include <map>
+#include <unordered_map>
 #include <memory>
 #include <set>
 #include <vector>
 #include <utility>
+#include <chrono>
 #include "buffer.h"
 
 #include "librados.h"
@@ -795,8 +797,8 @@ inline namespace v14_2_0 {
     // latency 
     void new_times();
     void delete_times();
-    int get_times(std::map<std::string, clock_t>& lrtime,
-        std::map<std::string, clock_t>& rltime);
+    int get_times(std::unordered_map<std::string, clock_t>& lrtime,
+        std::unordered_map<std::string, clock_t>& rltime);
 
     // deep copy
     void dup(const IoCtx& rhs);
