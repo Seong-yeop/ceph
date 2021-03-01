@@ -26,7 +26,7 @@ int main(int argc, const char **argv){
 
   rio.prepare_bench(IO_SIZE);
 
-  len = rio.write_bench(1, lrtime, rltime, IO_SIZE); 
+  len = rio.write_bench(10, lrtime, rltime, IO_SIZE); 
   //len = rio.read_bench(100, lrtime, rltime, IO_SIZE); 
   std::cout << "Total Write: " << len << '\n';
   

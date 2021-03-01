@@ -64,7 +64,7 @@ public:
   void close_bench();
   size_t read_bench(size_t num_op, std::unordered_map<std::string, clock_t>& lrtime, 
       std::unordered_map<std::string, clock_t>& rltime, size_t io_size);
-  size_t write_bench(size_t num_op, std::map<std::string, clock_t>& lrtime,
+  size_t write_bench(size_t num_op, std::unordered_map<std::string, clock_t>& lrtime,
       std::unordered_map<std::string, clock_t>& rltime, size_t io_size);
   unsigned char *generate_random_bytes(size_t size);
 };

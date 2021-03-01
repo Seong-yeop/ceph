@@ -1905,6 +1905,12 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
     m->clear_payload();
   }
 
+  osd->get_time_librados_to_rados(m->get_oid().name, m->get_recv_complete_stamp().usec());
+
+  dout(20) << __func__ << " get oid " << m->get_oid() 
+    << " recv_complete_time " << m->get_recv_complete_stamp()
+    << osd->time_file_dump() 
+    << dendl;
   dout(20) << __func__ << ": op " << *m << dendl;
 
   const hobject_t head = m->get_hobj().get_head();

@@ -7125,6 +7125,16 @@ void OSD::ms_fast_dispatch(Message *m)
     return;
   }
 
+  dout(10) << "now: " << ceph_clock_now() 
+    << "revc_complete time: " << m->get_recv_complete_stamp() << dendl;
+  /*
+  if (m->get_type() == MSG_OSD_REPOP) {
+    std::string oid_name = static_cast<MOSDOp*>(m)->get_oid().name;
+    dout(10) << "test " << __func__ << " " 
+      << oid_name << 
+      m->get_type() << dendl;
+  }
+  */
   // peering event?
   switch (m->get_type()) {
   case CEPH_MSG_PING:

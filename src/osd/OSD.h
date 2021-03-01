@@ -260,40 +260,38 @@ public:
   }
   void send_message_osd_client(Message *m, const ConnectionRef& con) {
     con->send_message(m);
-    if (m->get_type() == MSG_OSD_REPOPREPLY) {
-      const MOSDOpReply *reply = dynamic_cast<MOSDOpReply*>(m);
-      get_time_rados_to_librados(reply->get_oid().name);
+    
+    //if (m->get_type() == MSG_OSD_REPOPREPLY) {
+    {
+      const MOSDOpReply *reply = static_cast<MOSDOpReply*>(m);
+      utime_t now = ceph_clock_now();
+      get_time_rados_to_librados(reply->get_oid().name, now.usec());
     }
-    /*
-    dout(20) << __func__ << " time file dump "
-      << time_file_dump() << dendl;
-    */
+
   }
 
   entity_name_t get_cluster_msgr_name() const;
 
 private:
-  std::unordered_map<std::string, clock_t> *librados_to_rados_time;
-  std::unordered_map<std::string, clock_t> *rados_to_librados_time;
+  std::unordered_map<std::string, long> *librados_to_rados_time;
+  std::unordered_map<std::string, long> *rados_to_librados_time;
   bool discarded = 1;
   std::mutex file_write_mutex;
 
 public:
-  void get_time_librados_to_rados(const std::string& name) {
-    clock_t now = clock();
-    librados_to_rados_time->insert(std::pair<std::string, clock_t>(name, now));
+  void get_time_librados_to_rados(const std::string& name, const long now) {
+    librados_to_rados_time->insert(std::pair<std::string, long>(name, now));
   }
-  void get_time_rados_to_librados(const std::string& name) {
-    clock_t now = clock();
-    rados_to_librados_time->insert(std::pair<std::string, clock_t>(name, now));
+  void get_time_rados_to_librados(const std::string& name, const long now) {
+    rados_to_librados_time->insert(std::pair<std::string, long>(name, now));
   }
   void init_times() {
     new_times();
   }
   void new_times() {
     discarded = 0;
-    librados_to_rados_time = new std::unordered_map<std::string, clock_t>;
-    rados_to_librados_time = new std::unordered_map<std::string, clock_t>;
+    librados_to_rados_time = new std::unordered_map<std::string, long>;
+    rados_to_librados_time = new std::unordered_map<std::string, long>;
   }
   void delete_times() {
     delete librados_to_rados_time;
@@ -301,9 +299,9 @@ public:
     discarded = 1;
   }
 
-  void time_file_dump() {
+  int time_file_dump() {
     if (discarded == 1) 
-      return  ;
+      return  -1;
     std::scoped_lock lock(file_write_mutex);
     
     std::ofstream f_librados_to_rados_time;
@@ -315,6 +313,7 @@ public:
         auto key = it->first.c_str();
         auto value = std::to_string(it->second).c_str();
         f_librados_to_rados_time.write(key, sizeof(key));
+        f_librados_to_rados_time << '\t';
         f_librados_to_rados_time.write(value, sizeof(value));
         f_librados_to_rados_time << '\n';
       }
@@ -322,10 +321,11 @@ public:
     
     f_rados_to_librados_time.open("/tmp/osd_rados_to_librados_time.txt", std::ios_base::app);
     if(f_rados_to_librados_time.is_open()) {
-      for (auto it = librados_to_rados_time->begin(); it != librados_to_rados_time->end(); it++) {
+      for (auto it = rados_to_librados_time->begin(); it != rados_to_librados_time->end(); it++) {
         auto key = it->first.c_str();
         auto value = std::to_string(it->second).c_str();
         f_rados_to_librados_time.write(key, sizeof(key));
+        f_rados_to_librados_time << '\t';
         f_rados_to_librados_time.write(value, sizeof(value));
         f_rados_to_librados_time << '\n';
       }
@@ -335,7 +335,7 @@ public:
     f_rados_to_librados_time.close();
     delete_times();
     new_times();
-    return ; 
+    return 0; 
   }
 
 
