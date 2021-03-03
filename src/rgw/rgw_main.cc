@@ -172,7 +172,6 @@ static RGWRESTMgr *rest_filter(RGWRados *store, int dialect, RGWRESTMgr *orig)
     return orig;
   }
 }
-
 /*
  * start up the RADOS connection and then handle HTTP messages as they come in
  */
@@ -188,6 +187,9 @@ int radosgw_Main(int argc, const char **argv)
     return ENOSYS;
   }
 
+  // For measuring latency
+  RGWLatency::init_times();
+  
   /* alternative default for module */
   map<string,string> defaults = {
     { "debug_rgw", "1/5" },

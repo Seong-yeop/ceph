@@ -6275,6 +6275,8 @@ int RGWRados::Object::Read::read(int64_t ofs, int64_t end, bufferlist& bl, optio
   }
 
   ldpp_dout(dpp, 20) << "rados->read obj-ofs=" << ofs << " read_ofs=" << read_ofs << " read_len=" << read_len << dendl;
+  // get time rgw to rados
+  RGWLatency::get_time_rgw_to_rados(read_obj.oid, ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()));
   op.read(read_ofs, read_len, pbl, NULL);
 
   if (state.cur_pool != read_obj.pool) {
@@ -6304,6 +6306,9 @@ int RGWRados::Object::Read::read(int64_t ofs, int64_t end, bufferlist& bl, optio
   if (merge_bl) {
     bl.append(read_bl);
   }
+  
+  //get time rados to rgw
+  RGWLatency::get_time_rados_to_rgw(read_obj.oid, ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()));
 
   return bl.length();
 }

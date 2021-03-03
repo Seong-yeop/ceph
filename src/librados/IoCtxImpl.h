@@ -42,9 +42,6 @@ struct librados::IoCtxImpl {
   object_locator_t oloc;
   int extra_op_flags = 0;
   
-  std::unordered_map<std::string, clock_t> *librados_to_rados_time;
-  std::unordered_map<std::string, clock_t> *rados_to_librados_time;
-
   ceph::mutex aio_write_list_lock =
     ceph::make_mutex("librados::IoCtxImpl::aio_write_list_lock");
   ceph_tid_t aio_write_seq = 0;
@@ -100,6 +97,9 @@ struct librados::IoCtxImpl {
   ::ObjectOperation *prepare_assert_ops(::ObjectOperation *op);
 
   // latency  
+  std::unordered_map<std::string, clock_t> *librados_to_rados_time;
+  std::unordered_map<std::string, clock_t> *rados_to_librados_time;
+  
   void get_time_librados_to_rados(const std::string& name){
     clock_t now = clock();
     librados_to_rados_time->insert(std::pair<std::string, clock_t>(name, now));

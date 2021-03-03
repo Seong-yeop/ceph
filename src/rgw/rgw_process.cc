@@ -172,7 +172,7 @@ int rgw_process_authenticated(RGWHandler_REST * const handler,
   return 0;
 }
 
-int process_request(rgw::sal::RGWRadosStore* const store,
+int process_request(rgw::sal::RGWRadosStore* store,
                     RGWREST* const rest,
                     RGWRequest* const req,
                     const std::string& frontend_prefix,
@@ -186,8 +186,9 @@ int process_request(rgw::sal::RGWRadosStore* const store,
 {
   int ret = client_io->init(g_ceph_context);
 
-  dout(1) << "====== starting new request req=" << hex << req << dec
+  dout(1) << __func__ << " ====== starting new request req=" << hex << req << dec
 	  << " =====" << dendl;
+
   perfcounter->inc(l_rgw_req);
 
   RGWEnv& rgw_env = client_io->get_env();
@@ -354,6 +355,19 @@ done:
   if (handler)
     handler->put_op(op);
   rest->put_handler(handler);
+
+
+  if (s->object) {
+    dout(20) << " obj key: "  << s->object->get_oid() 
+             << " client to rgw time: " << ceph::coarse_real_clock::to_timespec(s->time).tv_nsec/1000
+             << " rgw to client time: " << ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()).tv_nsec/1000
+             << dendl;
+    
+    RGWLatency::get_time_client_to_rgw(s->object->get_oid(), ceph::coarse_real_clock::to_timespec(s->time));
+    RGWLatency::get_time_rgw_to_client(s->object->get_oid(), ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()));
+  
+  }
+
 
   dout(1) << "====== req done req=" << hex << req << dec
 	  << " op status=" << op_ret
