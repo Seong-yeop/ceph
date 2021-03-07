@@ -2318,13 +2318,5 @@ int decode_bl(bufferlist& bl, T& t)
   return 0;
 }
 
-struct obj_time {
-  int used = 0;
-  std::string name;
-  time_t tv_sec;
-  long tv_nsec;
-};
-
-
 
 #endif

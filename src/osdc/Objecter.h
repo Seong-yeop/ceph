@@ -40,6 +40,7 @@
 #include "include/rados/rados_types.hpp"
 #include "include/function2.hpp"
 #include "include/neorados/RADOS_Decodable.hpp"
+#include "include/rados/librados.hpp"
 
 #include "common/admin_socket.h"
 #include "common/async/completion.h"

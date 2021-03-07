@@ -2204,12 +2204,3 @@ bool RGWBucketInfo::empty_sync_policy() const
   return sync_policy->empty();
 }
 
-struct obj_time RGWLatency::client_to_rgw_time[] = {};
-struct obj_time RGWLatency::rgw_to_client_time[] = {};
-struct obj_time RGWLatency::rgw_to_rados_time[] = {};
-struct obj_time RGWLatency::rados_to_rgw_time[] = {};
-int RGWLatency::client_to_rgw_count = 0;
-int RGWLatency::rgw_to_client_count = 0;
-int RGWLatency::rgw_to_rados_count = 0;
-int RGWLatency::rados_to_rgw_count = 0;
-

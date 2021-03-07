@@ -188,8 +188,6 @@ int radosgw_Main(int argc, const char **argv)
     return ENOSYS;
   }
 
-  // For measuring latency
-  RGWLatency::init_times();
   
   /* alternative default for module */
   map<string,string> defaults = {
@@ -321,6 +319,8 @@ int radosgw_Main(int argc, const char **argv)
     derr << "ERROR: unable to initialize rgw tools" << dendl;
     return -r;
   }
+  // For measuring latency
+  //librados::RGWLatency::init_times();
 
   rgw_init_resolver();
   rgw::curl::setup_curl(fe_map);

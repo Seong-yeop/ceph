@@ -96,37 +96,6 @@ struct librados::IoCtxImpl {
 
   ::ObjectOperation *prepare_assert_ops(::ObjectOperation *op);
 
-  // latency  
-  std::unordered_map<std::string, clock_t> *librados_to_rados_time;
-  std::unordered_map<std::string, clock_t> *rados_to_librados_time;
-  
-  void get_time_librados_to_rados(const std::string& name){
-    clock_t now = clock();
-    librados_to_rados_time->insert(std::pair<std::string, clock_t>(name, now));
-  }
-
-  void get_time_rados_to_librados(const std::string& name){
-    clock_t now = clock();
-    rados_to_librados_time->insert(std::pair<std::string, clock_t>(name, now));
-  }
-
-  int get_times(std::unordered_map<std::string, clock_t>& lrtime, 
-      std::unordered_map<std::string, clock_t>& rltime){
-   lrtime.insert(librados_to_rados_time->begin(), librados_to_rados_time->end()); 
-   rltime.insert(rados_to_librados_time->begin(), rados_to_librados_time->end());
-   return 0;
-  }
-
-  void new_times() {
-    librados_to_rados_time = new std::unordered_map<std::string, clock_t>;
-    rados_to_librados_time = new std::unordered_map<std::string, clock_t>;
-  }
-
-  void delete_times() {
-    delete librados_to_rados_time;
-    delete rados_to_librados_time;
-  }
-
   // snaps
   int snap_list(vector<uint64_t> *snaps);
   int snap_lookup(const char *name, uint64_t *snapid);

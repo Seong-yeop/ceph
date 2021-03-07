@@ -10,6 +10,8 @@
 #include <vector>
 #include <utility>
 #include <chrono>
+#include <fstream>
+#include <mutex>
 #include "buffer.h"
 
 #include "librados.h"
@@ -793,13 +795,6 @@ inline namespace v14_2_0 {
     // Close our pool handle
     void close();
 
-
-    // latency 
-    void new_times();
-    void delete_times();
-    int get_times(std::unordered_map<std::string, clock_t>& lrtime,
-        std::unordered_map<std::string, clock_t>& rltime);
-
     // deep copy
     void dup(const IoCtx& rhs);
 
@@ -1556,22 +1551,35 @@ inline namespace v14_2_0 {
     const Rados& operator=(const Rados& rhs);
     RadosClient *client;
   };
+/*
+struct obj_time {
+  int used = 0;
+  std::string name;
+  time_t tv_sec;
+  long tv_nsec;
+};
 
 class RGWLatency {
   private:
-    static struct obj_time client_to_rgw_time[1000];
-    static int client_to_rgw_count;
-    static struct obj_time rgw_to_client_time[1000];
-    static int rgw_to_client_count;
-    static struct obj_time rgw_to_rados_time[1000];
-    static int rgw_to_rados_count;
-    static struct obj_time rados_to_rgw_time[1000];
-    static int rados_to_rgw_count;
+    inline static struct obj_time client_to_rgw_time[1000] = {};
+    inline static int client_to_rgw_count = 0;
+    inline static struct obj_time rgw_to_client_time[1000] = {};
+    inline static int rgw_to_client_count = 0;
+    inline static struct obj_time rgw_to_rados_time[1000] = {};
+    inline static int rgw_to_rados_count = 0;
+    inline static struct obj_time rados_to_rgw_time[1000] = {};
+    inline static int rados_to_rgw_count = 0;
     
-    static std::mutex file_write_mutex;
+    inline static std::mutex file_write_mutex;
+    inline static std::mutex lock1;
+    inline static std::mutex lock2;
+    inline static std::mutex lock3;
+    inline static std::mutex lock4;
+
 
   public:
-    static void get_time_client_to_rgw(const std::string& name, const struct timespec ts) {
+    static void get_time_client_to_rgw(const std::string name, const struct timespec ts) {
+      std::scoped_lock lock(lock1);
       client_to_rgw_time[client_to_rgw_count].used = 1;
       client_to_rgw_time[client_to_rgw_count].name = name;
       client_to_rgw_time[client_to_rgw_count].tv_sec = ts.tv_sec;
@@ -1579,21 +1587,24 @@ class RGWLatency {
       client_to_rgw_count++;
       
     }
-    static void get_time_rgw_to_client(const std::string& name, const struct timespec ts) {
+    static void get_time_rgw_to_client(const std::string name, const struct timespec ts) {
+      std::scoped_lock lock(lock2);
       rgw_to_client_time[rgw_to_client_count].used = 1;
       rgw_to_client_time[rgw_to_client_count].name = name;
       rgw_to_client_time[rgw_to_client_count].tv_sec = ts.tv_sec;
       rgw_to_client_time[rgw_to_client_count].tv_nsec = ts.tv_nsec;
       rgw_to_client_count++;
     }
-    static void get_time_rgw_to_rados(const std::string& name, const struct timespec ts) {
+    static void get_time_rgw_to_rados(const std::string name, const struct timespec ts) {
+      std::scoped_lock lock(lock3);
       rgw_to_rados_time[rgw_to_rados_count].used = 1;
       rgw_to_rados_time[rgw_to_rados_count].name = name;
       rgw_to_rados_time[rgw_to_rados_count].tv_sec = ts.tv_sec;
       rgw_to_rados_time[rgw_to_rados_count].tv_nsec = ts.tv_nsec;
       rgw_to_rados_count++;
     }
-    static void get_time_rados_to_rgw(const std::string& name, const struct timespec ts) {
+    static void get_time_rados_to_rgw(const std::string name, const struct timespec ts) {
+      std::scoped_lock lock(lock4);
       rados_to_rgw_time[rados_to_rgw_count].used = 1;
       rados_to_rgw_time[rados_to_rgw_count].name = name;
       rados_to_rgw_time[rados_to_rgw_count].tv_sec = ts.tv_sec;
@@ -1602,10 +1613,10 @@ class RGWLatency {
     }
 
     static void init_times() {
-      memset(&client_to_rgw_time, 0, sizeof(struct obj_time)*1000);
-      memset(&rgw_to_client_time, 0, sizeof(struct obj_time)*1000);
-      memset(&rgw_to_rados_time, 0, sizeof(struct obj_time)*1000);
-      memset(&rados_to_rgw_time, 0, sizeof(struct obj_time)*1000);
+      memset(client_to_rgw_time, 0, sizeof(struct obj_time)*1000);
+      memset(rgw_to_client_time, 0, sizeof(struct obj_time)*1000);
+      memset(rgw_to_rados_time, 0, sizeof(struct obj_time)*1000);
+      memset(rados_to_rgw_time, 0, sizeof(struct obj_time)*1000);
       client_to_rgw_count = 0;
       rgw_to_client_count = 0;
       rgw_to_rados_count = 0;
@@ -1648,6 +1659,7 @@ class RGWLatency {
     return 0; 
     }
 };
+*/
 
 } // namespace v14_2_0
 } // namespace librados
