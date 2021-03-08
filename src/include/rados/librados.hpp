@@ -1554,6 +1554,7 @@ inline namespace v14_2_0 {
 
 struct obj_time {
   int used = 0;
+  char _name[100];
   std::string name;
   time_t tv_sec;
   long tv_nsec;
@@ -1575,26 +1576,36 @@ class RGWLatency {
     inline static std::mutex lock2;
     inline static std::mutex lock3;
     inline static std::mutex lock4;
+    inline static std::mutex lock5;
 
 
   public:
     static void set_used_zero(struct obj_time* time){
       for (int i = 0; i < 1000; i++) {
         (time+i)->used = 0;
+        (time+i)->name.clear();
+        memset((time+i)->_name, 0, sizeof(char)*100);
+        (time+i)->tv_sec = 0;
+        (time+i)->tv_nsec = 0;
       }
     }
 
     static void get_time_client_to_rgw(const std::string name, const struct timespec ts) {
-      std::scoped_lock lock(lock1);
+      std::scoped_lock<std::mutex> lock(lock1);
+      if (client_to_rgw_count >= 1000 || client_to_rgw_time[client_to_rgw_count].used == 1)
+        return ;
       client_to_rgw_time[client_to_rgw_count].used = 1;
+      //size_t length = name.copy(client_to_rgw_time[client_to_rgw_count].name, name.length());
+      //client_to_rgw_time[client_to_rgw_count].name[length] = '\n';
       client_to_rgw_time[client_to_rgw_count].name = name;
       client_to_rgw_time[client_to_rgw_count].tv_sec = ts.tv_sec;
       client_to_rgw_time[client_to_rgw_count].tv_nsec = ts.tv_nsec;
       client_to_rgw_count++;
-      
     }
     static void get_time_rgw_to_client(const std::string name, const struct timespec ts) {
-      std::scoped_lock lock(lock2);
+      std::scoped_lock<std::mutex> lock(lock2);
+      if (rgw_to_client_count >= 1000 || rgw_to_client_time[rgw_to_client_count].used == 1)
+        return ;
       rgw_to_client_time[rgw_to_client_count].used = 1;
       rgw_to_client_time[rgw_to_client_count].name = name;
       rgw_to_client_time[rgw_to_client_count].tv_sec = ts.tv_sec;
@@ -1602,15 +1613,23 @@ class RGWLatency {
       rgw_to_client_count++;
     }
     static void get_time_rgw_to_rados(const std::string name, const struct timespec ts) {
-      std::scoped_lock lock(lock3);
+      std::scoped_lock<std::mutex> lock(lock3);
+      if (rgw_to_rados_count >= 1000 || rgw_to_rados_time[rgw_to_rados_count].used == 1)
+        return ;
+      
       rgw_to_rados_time[rgw_to_rados_count].used = 1;
-      rgw_to_rados_time[rgw_to_rados_count].name = name;
+      //rgw_to_rados_time[rgw_to_rados_count].name.reserve(100);
+      size_t length = name.copy(rgw_to_rados_time[rgw_to_rados_count]._name, name.length());
+      rgw_to_rados_time[rgw_to_rados_count]._name[length] = '\0';
+      //rgw_to_rados_time[rgw_to_rados_count].name = name;
       rgw_to_rados_time[rgw_to_rados_count].tv_sec = ts.tv_sec;
       rgw_to_rados_time[rgw_to_rados_count].tv_nsec = ts.tv_nsec;
       rgw_to_rados_count++;
     }
     static void get_time_rados_to_rgw(const std::string name, const struct timespec ts) {
-      std::scoped_lock lock(lock4);
+      std::scoped_lock<std::mutex> lock(lock4);
+      if (rados_to_rgw_count >= 1000 || rados_to_rgw_time[rados_to_rgw_count].used == 1)
+        return ;
       rados_to_rgw_time[rados_to_rgw_count].used = 1;
       rados_to_rgw_time[rados_to_rgw_count].name = name;
       rados_to_rgw_time[rados_to_rgw_count].tv_sec = ts.tv_sec;
@@ -1618,13 +1637,18 @@ class RGWLatency {
       rados_to_rgw_count++;
     }
 
-    static void init_times() {
-      set_used_zero(client_to_rgw_time);
-      set_used_zero(rgw_to_client_time);
+    static void init_times1() {
+      std::scoped_lock<std::mutex> lock(lock5);
       set_used_zero(rgw_to_rados_time);
       set_used_zero(rados_to_rgw_time);
-      client_to_rgw_count = 0;
-      rgw_to_client_count = 0;
+      rgw_to_rados_count = 0;
+      rados_to_rgw_count = 0;
+    }
+    
+    static void init_times2() {
+      std::scoped_lock<std::mutex> lock(lock5);
+      set_used_zero(rgw_to_rados_time);
+      set_used_zero(rados_to_rgw_time);
       rgw_to_rados_count = 0;
       rados_to_rgw_count = 0;
     }
@@ -1641,6 +1665,8 @@ class RGWLatency {
           if ((time+i)->used != 1)
             break;
           auto name = (time+i)->name;
+          if (name.length() == 0)
+            name = (time+i)->_name;
           //auto sec = std::to_string((time+i)->tv_sec).c_str();
           //auto nsec = std::to_string((time+i)->tv_nsec).c_str();
           auto nsec = to_nsec( (time+i)->tv_sec, (time+i)->tv_nsec );
@@ -1655,14 +1681,20 @@ class RGWLatency {
       }
     }
   
-    static int time_file_dump() {
-      std::scoped_lock lock(file_write_mutex);
+    static int time_file_dump1() {
+      std::scoped_lock<std::mutex> lock(file_write_mutex);
       print_file(client_to_rgw_time, "/tmp/client_to_rgw_time.txt");
       print_file(rgw_to_client_time, "/tmp/rgw_to_client_time.txt");
+      init_times1();
+      return 0; 
+    }
+
+    static int time_file_dump2() {
+      std::scoped_lock<std::mutex> lock(file_write_mutex);
       print_file(rgw_to_rados_time, "/tmp/rgw_to_rados_time.txt");
       print_file(rados_to_rgw_time, "/tmp/rados_to_rgw_time.txt");
-      init_times();
-    return 0; 
+      init_times2();
+      return 0;
     }
 };
 
