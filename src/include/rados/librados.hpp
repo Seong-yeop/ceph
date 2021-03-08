@@ -1551,7 +1551,7 @@ inline namespace v14_2_0 {
     const Rados& operator=(const Rados& rhs);
     RadosClient *client;
   };
-/*
+
 struct obj_time {
   int used = 0;
   std::string name;
@@ -1578,6 +1578,12 @@ class RGWLatency {
 
 
   public:
+    static void set_used_zero(struct obj_time* time){
+      for (int i = 0; i < 1000; i++) {
+        (time+i)->used = 0;
+      }
+    }
+
     static void get_time_client_to_rgw(const std::string name, const struct timespec ts) {
       std::scoped_lock lock(lock1);
       client_to_rgw_time[client_to_rgw_count].used = 1;
@@ -1613,10 +1619,10 @@ class RGWLatency {
     }
 
     static void init_times() {
-      memset(client_to_rgw_time, 0, sizeof(struct obj_time)*1000);
-      memset(rgw_to_client_time, 0, sizeof(struct obj_time)*1000);
-      memset(rgw_to_rados_time, 0, sizeof(struct obj_time)*1000);
-      memset(rados_to_rgw_time, 0, sizeof(struct obj_time)*1000);
+      set_used_zero(client_to_rgw_time);
+      set_used_zero(rgw_to_client_time);
+      set_used_zero(rgw_to_rados_time);
+      set_used_zero(rados_to_rgw_time);
       client_to_rgw_count = 0;
       rgw_to_client_count = 0;
       rgw_to_rados_count = 0;
@@ -1645,8 +1651,8 @@ class RGWLatency {
           //f.write(nsec, sizeof(nsec));
           f << '\n';
         }
+        f.close();
       }
-      f.close();
     }
   
     static int time_file_dump() {
@@ -1659,7 +1665,6 @@ class RGWLatency {
     return 0; 
     }
 };
-*/
 
 } // namespace v14_2_0
 } // namespace librados

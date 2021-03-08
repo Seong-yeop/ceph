@@ -6306,7 +6306,7 @@ int RGWRados::Object::Read::read(int64_t ofs, int64_t end, bufferlist& bl, optio
   }
   
   //get time rados to rgw
-  //librados::RGWLatency::get_time_rados_to_rgw(read_obj.oid, ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()));
+  librados::RGWLatency::get_time_rados_to_rgw(read_obj.oid, ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()));
 
   return bl.length();
 }

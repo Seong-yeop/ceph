@@ -320,7 +320,7 @@ int radosgw_Main(int argc, const char **argv)
     return -r;
   }
   // For measuring latency
-  //librados::RGWLatency::init_times();
+  librados::RGWLatency::init_times();
 
   rgw_init_resolver();
   rgw::curl::setup_curl(fe_map);
