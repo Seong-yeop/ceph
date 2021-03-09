@@ -1618,7 +1618,6 @@ class RGWLatency {
         return ;
       
       rgw_to_rados_time[rgw_to_rados_count].used = 1;
-      //rgw_to_rados_time[rgw_to_rados_count].name.reserve(100);
       size_t length = name.copy(rgw_to_rados_time[rgw_to_rados_count]._name, name.length());
       rgw_to_rados_time[rgw_to_rados_count]._name[length] = '\0';
       //rgw_to_rados_time[rgw_to_rados_count].name = name;
@@ -1631,7 +1630,9 @@ class RGWLatency {
       if (rados_to_rgw_count >= 1000 || rados_to_rgw_time[rados_to_rgw_count].used == 1)
         return ;
       rados_to_rgw_time[rados_to_rgw_count].used = 1;
-      rados_to_rgw_time[rados_to_rgw_count].name = name;
+      size_t length = name.copy(rados_to_rgw_time[rados_to_rgw_count]._name, name.length());
+      rados_to_rgw_time[rados_to_rgw_count]._name[length] = '\0';
+      //rados_to_rgw_time[rados_to_rgw_count].name = name;
       rados_to_rgw_time[rados_to_rgw_count].tv_sec = ts.tv_sec;
       rados_to_rgw_time[rados_to_rgw_count].tv_nsec = ts.tv_nsec;
       rados_to_rgw_count++;
@@ -1639,10 +1640,10 @@ class RGWLatency {
 
     static void init_times1() {
       std::scoped_lock<std::mutex> lock(lock5);
-      set_used_zero(rgw_to_rados_time);
-      set_used_zero(rados_to_rgw_time);
-      rgw_to_rados_count = 0;
-      rados_to_rgw_count = 0;
+      set_used_zero(client_to_rgw_time);
+      set_used_zero(rgw_to_client_time);
+      client_to_rgw_count = 0;
+      rgw_to_client_count = 0;
     }
     
     static void init_times2() {

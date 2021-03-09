@@ -368,9 +368,13 @@ done:
     librados::RGWLatency::get_time_rgw_to_client(s->object->get_oid(), ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()));
 
     dout(20) << " rgw latency file dump " 
-             << librados::RGWLatency::time_file_dump()
+             << librados::RGWLatency::time_file_dump1()
              << dendl;
   }
+
+  dout(20) << " rgw-rados latency file dump "
+           << librados::RGWLatency::time_file_dump2()
+           << dendl;
 
 
   dout(1) << "====== req done req=" << hex << req << dec

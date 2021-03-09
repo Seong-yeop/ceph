@@ -3225,11 +3225,7 @@ void Objecter::_send_op(Op *op)
   if (op->trace.valid()) {
     m->trace.init("op msg", nullptr, &op->trace);
   }
-  if (m->get_oid().name.length() >= 3)
-    librados::RGWLatency::get_time_rgw_to_rados(m->get_oid().name, ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()));
-  ldout(cct, 20) << " file dump " <<
-                 << librados::RGWLatency::
-                 << ldendl;
+  //librados::RGWLatency::get_time_rgw_to_rados(m->get_oid().name, ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()));
   op->session->con->send_message(m);
 }
 
