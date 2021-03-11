@@ -7,7 +7,9 @@
 #include <memory>
 #include <set>
 #include <vector>
+#include <mutex>
 #include <utility>
+#include <fstream>
 #include "buffer.h"
 
 #include "librados.h"

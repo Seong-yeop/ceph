@@ -48,6 +48,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <fstream>
 
 #include "include/unordered_map.h"
 
