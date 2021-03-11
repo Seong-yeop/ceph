@@ -17,6 +17,7 @@
 #include "rgw_opa.h"
 #include "rgw_perf_counters.h"
 
+#include "include/rados/librados.hpp"
 #include "services/svc_zone_utils.h"
 
 #define dout_subsys ceph_subsys_rgw
@@ -311,6 +312,22 @@ done:
   if (handler)
     handler->put_op(op);
   rest->put_handler(handler);
+
+
+
+ if (s->object) {
+    dout(20) << " obj key: "  << s->object->get_oid() 
+             << " client to rgw time: " << ceph::coarse_real_clock::to_timespec(s->time).tv_nsec/1000
+             << " rgw to client time: " << ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()).tv_nsec/1000
+             << dendl;
+    
+    librados::RGWLatency::get_time_client_to_rgw(s->object->get_oid(), ceph::coarse_real_clock::to_timespec(s->time));
+    librados::RGWLatency::get_time_rgw_to_client(s->object->get_oid(), ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()));
+
+    dout(20) << " rgw latency file dump " 
+             << librados::RGWLatency::time_file_dump1()
+             << dendl;
+  }
 
   dout(1) << "====== req done req=" << hex << req << dec
 	  << " op status=" << op_ret

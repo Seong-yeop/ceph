@@ -269,8 +269,81 @@ public:
   }
   void send_message_osd_client(Message *m, const ConnectionRef& con) {
     con->send_message(m);
+    //if (m->get_type() == MSG_OSD_REPOPREPLY) {
+    {
+      const MOSDOpReply *reply = static_cast<MOSDOpReply*>(m);
+      utime_t now = ceph_clock_now();
+      get_time_rados_to_librados(reply->get_oid().name, now.to_nsec());
+    }  
   }
+
   entity_name_t get_cluster_msgr_name() const;
+
+private:
+  std::unordered_map<std::string, uint64_t> *librados_to_rados_time;
+  std::unordered_map<std::string, uint64_t> *rados_to_librados_time;
+  bool discarded = 1;
+  std::mutex file_write_mutex;
+
+public:
+  void get_time_librados_to_rados(const std::string& name, const uint64_t now) {
+    librados_to_rados_time->insert(std::pair<std::string, uint64_t>(name, now));
+  }
+  void get_time_rados_to_librados(const std::string& name, const uint64_t now) {
+    rados_to_librados_time->insert(std::pair<std::string, uint64_t>(name, now));
+  }
+  void init_times() {
+    new_times();
+  }
+  void new_times() {
+    discarded = 0;
+    librados_to_rados_time = new std::unordered_map<std::string, uint64_t>;
+    rados_to_librados_time = new std::unordered_map<std::string, uint64_t>;
+  }
+  void delete_times() {
+    delete librados_to_rados_time;
+    delete rados_to_librados_time;
+    discarded = 1;
+  }
+
+  int time_file_dump() {
+    if (discarded == 1) 
+      return  -1;
+    std::scoped_lock lock(file_write_mutex);
+    
+    std::ofstream f_librados_to_rados_time;
+    std::ofstream f_rados_to_librados_time;
+
+    f_librados_to_rados_time.open("/tmp/osd_librados_to_rados_time.txt", std::ios_base::app);
+    if (f_librados_to_rados_time.is_open()) {
+      for (auto it = librados_to_rados_time->begin(); it != librados_to_rados_time->end(); it++) {
+        auto key = it->first;
+        auto value = it->second;
+        f_librados_to_rados_time << key;
+        f_librados_to_rados_time << '\t';
+        f_librados_to_rados_time << value;
+        f_librados_to_rados_time << '\n';
+      }
+    }
+    
+    f_rados_to_librados_time.open("/tmp/osd_rados_to_librados_time.txt", std::ios_base::app);
+    if(f_rados_to_librados_time.is_open()) {
+      for (auto it = rados_to_librados_time->begin(); it != rados_to_librados_time->end(); it++) {
+        auto key = it->first;
+        auto value = it->second;
+        f_rados_to_librados_time << key;
+        f_rados_to_librados_time << '\t';
+        f_rados_to_librados_time << value;
+        f_rados_to_librados_time << '\n';
+      }
+    }
+
+    f_librados_to_rados_time.close();
+    f_rados_to_librados_time.close();
+    delete_times();
+    new_times();
+    return 0; 
+  }
 
 private:
   // -- scrub scheduling --
