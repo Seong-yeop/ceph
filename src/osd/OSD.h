@@ -286,6 +286,7 @@ private:
   inline static int r_count = 0;
 
   inline static std::mutex file_write_mutex;
+  inline static std::mutex lock1;
 
 public:
   static void set_used_zero(struct obj_time* time) {
@@ -316,6 +317,7 @@ public:
   }
   
   static void init_times() {
+    std::scoped_lock<std::mutex> lock(lock1);
     set_used_zero(librados_to_rados_time);
     set_used_zero(rados_to_librados_time);
     r_count = 0;
@@ -324,8 +326,9 @@ public:
 
 
   static void print_file(struct obj_time* time, std::string path) {
-  std::ofstream f;
-  f.open(path, std::ios_base::app);
+    std::scoped_lock<std::mutex> lock(file_write_mutex);
+    std::ofstream f;
+    f.open(path, std::ios_base::app);
     if (f.is_open())  {
       for (int i = 0; i < 1000; i++) {
         if ((time+i)->used != 1)
@@ -342,7 +345,6 @@ public:
   }
 
   static int time_file_dump() {
-    std::scoped_lock<std::mutex> lock(file_write_mutex);
     print_file(librados_to_rados_time, "/tmp/osd_librados_to_rados_time.txt");
     print_file(rados_to_librados_time, "/tmp/osd_rados_to_librados_time.txt");
     init_times();
