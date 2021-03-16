@@ -21,8 +21,8 @@ endpoint = 'http://172.31.4.82:80'
 access_key="M1IVV48BQHZVIZP10WY9"
 secret_key="J7mzy9mel45otIN2wlWdvC3LSTREuNAUN6PS3vQa"
 writeData = bytes()
-size = 4*2**20 # 4KB
-num_op = 1
+size = 2**20 # 4KB
+num_op = 10
 latencyResults = {}
 
 conn = boto3.resource('s3',
@@ -32,16 +32,14 @@ conn = boto3.resource('s3',
 
 
 bucket = conn.Bucket('my-new-bucket')
-bucket.create()
-
-writeData = makeRandomBytes(size)
+#bucket.create()
 
 for i in range(num_op):
     start = time.perf_counter()
-    bucket.put_object(Bucket="my-new-bucket",
-            Key="test" + str(i),
-            Body=writeData,
+    obj = conn.Object("my-new-bucket",
+            "obj4m" + str(i),
             )
+    body = obj.get()['Body'].read()
     end = time.perf_counter() - start
     latencyResults[str(i)] = str(end)            
 
