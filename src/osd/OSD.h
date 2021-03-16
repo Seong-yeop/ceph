@@ -318,6 +318,7 @@ public:
         f_librados_to_rados_time << value;
         f_librados_to_rados_time << '\n';
       }
+      f_librados_to_rados_time.close();
     }
     
     f_rados_to_librados_time.open("/tmp/osd_rados_to_librados_time.txt", std::ios_base::app);
@@ -330,10 +331,9 @@ public:
         f_rados_to_librados_time << value;
         f_rados_to_librados_time << '\n';
       }
+      f_rados_to_librados_time.close();
     }
 
-    f_librados_to_rados_time.close();
-    f_rados_to_librados_time.close();
     delete_times();
     new_times();
     return 0; 
