@@ -1911,6 +1911,7 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
     << " recv_complete_time " << m->get_recv_stamp()
     << osd->time_file_dump() 
     << dendl;
+
   
   dout(20) << __func__ << ": op " << *m << dendl;
 

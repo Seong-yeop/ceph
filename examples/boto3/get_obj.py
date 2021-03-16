@@ -17,12 +17,11 @@ def makeRandomBytes(size):
     return os.urandom(size)
 
 # endpoint and keys from vstart
-endpoint = 'http://172.31.4.82:80'
-access_key="M1IVV48BQHZVIZP10WY9"
-secret_key="J7mzy9mel45otIN2wlWdvC3LSTREuNAUN6PS3vQa"
-writeData = bytes()
-size = 2**20 # 4KB
-num_op = 10
+#endpoint = 'http://172.31.4.82:80'
+endpoint = 'http://127.0.0.1:8000'
+access_key="0555b35654ad1656d804"
+secret_key="h7GhxuBLTrlhVUyxSPUKUV8r/2EI4ngqJxD7iBdBYLhwluN30JaT3Q=="
+num_op = 1000
 latencyResults = {}
 
 conn = boto3.resource('s3',
@@ -37,7 +36,7 @@ bucket = conn.Bucket('my-new-bucket')
 for i in range(num_op):
     start = time.perf_counter()
     obj = conn.Object("my-new-bucket",
-            "obj4m" + str(i),
+            "abcde" + str(i),
             )
     body = obj.get()['Body'].read()
     end = time.perf_counter() - start

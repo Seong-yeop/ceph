@@ -269,74 +269,84 @@ public:
       get_time_rados_to_librados(reply->get_oid().name, now.to_nsec());
     }
   }
+  
 
   entity_name_t get_cluster_msgr_name() const;
-
   
+  struct obj_time {
+    int used;
+    std::string name;
+    uint64_t tv_nsec;
+  };
+
 private:
-  std::unordered_map<std::string, uint64_t> *librados_to_rados_time;
-  std::unordered_map<std::string, uint64_t> *rados_to_librados_time;
-  bool discarded = 1;
-  std::mutex file_write_mutex;
+  inline static struct obj_time librados_to_rados_time[1000] = {0,};
+  inline static int l_count = 0;
+  inline static struct obj_time rados_to_librados_time[1000] = {0,};
+  inline static int r_count = 0;
+
+  inline static std::mutex file_write_mutex;
 
 public:
-  void get_time_librados_to_rados(const std::string& name, const uint64_t now) {
-    librados_to_rados_time->insert(std::pair<std::string, uint64_t>(name, now));
-  }
-  void get_time_rados_to_librados(const std::string& name, const uint64_t now) {
-    rados_to_librados_time->insert(std::pair<std::string, uint64_t>(name, now));
-  }
-  void init_times() {
-    new_times();
-  }
-  void new_times() {
-    discarded = 0;
-    librados_to_rados_time = new std::unordered_map<std::string, uint64_t>;
-    rados_to_librados_time = new std::unordered_map<std::string, uint64_t>;
-  }
-  void delete_times() {
-    delete librados_to_rados_time;
-    delete rados_to_librados_time;
-    discarded = 1;
-  }
-
-  int time_file_dump() {
-    if (discarded == 1) 
-      return  -1;
-    std::scoped_lock lock(file_write_mutex);
-    
-    std::ofstream f_librados_to_rados_time;
-    std::ofstream f_rados_to_librados_time;
-
-    f_librados_to_rados_time.open("/tmp/osd_librados_to_rados_time.txt", std::ios_base::app);
-    if (f_librados_to_rados_time.is_open()) {
-      for (auto it = librados_to_rados_time->begin(); it != librados_to_rados_time->end(); it++) {
-        auto key = it->first;
-        auto value = it->second;
-        f_librados_to_rados_time << key;
-        f_librados_to_rados_time << '\t';
-        f_librados_to_rados_time << value;
-        f_librados_to_rados_time << '\n';
-      }
-      f_librados_to_rados_time.close();
+  static void set_used_zero(struct obj_time* time) {
+    for (int i = 0; i < 1000; i++) {
+      (time+i)->used = 0;
+      (time+i)->name.clear();
+      (time+i)->tv_nsec = 0;
     }
-    
-    f_rados_to_librados_time.open("/tmp/osd_rados_to_librados_time.txt", std::ios_base::app);
-    if(f_rados_to_librados_time.is_open()) {
-      for (auto it = rados_to_librados_time->begin(); it != rados_to_librados_time->end(); it++) {
-        auto key = it->first;
-        auto value = it->second;
-        f_rados_to_librados_time << key;
-        f_rados_to_librados_time << '\t';
-        f_rados_to_librados_time << value;
-        f_rados_to_librados_time << '\n';
-      }
-      f_rados_to_librados_time.close();
-    }
+  }
+  
+  static void get_time_librados_to_rados(const std::string name, const uint64_t now) {
+    if (l_count >= 1000 || librados_to_rados_time[l_count].used ==1)
+      time_file_dump();
+      return ;
+    librados_to_rados_time[l_count].used = 1;
+    librados_to_rados_time[l_count].name = name;
+    librados_to_rados_time[l_count].tv_nsec = now;
+  }
 
-    delete_times();
-    new_times();
-    return 0; 
+  
+  static void get_time_rados_to_librados(const std::string name, const uint64_t now) {
+  if (r_count >= 1000 || rados_to_librados_time[r_count].used == 1)
+    time_file_dump();
+    return ;
+  rados_to_librados_time[r_count].used = 1;
+  rados_to_librados_time[r_count].name = name;
+  rados_to_librados_time[r_count].tv_nsec = now;
+  }
+  
+  static void init_times() {
+    set_used_zero(librados_to_rados_time);
+    set_used_zero(rados_to_librados_time);
+    r_count = 0;
+    l_count = 0;
+  }
+
+
+  static void print_file(struct obj_time* time, std::string path) {
+  std::ofstream f;
+  f.open(path, std::ios_base::app);
+    if (f.is_open())  {
+      for (int i = 0; i < 1000; i++) {
+        if ((time+i)->used != 1)
+          break;
+        auto name = (time+i)->name;
+        auto nsec = (time+i)->tv_nsec;
+        f << name;
+        f << '\t';
+        f << nsec;
+        f << '\n';
+      }
+      f.close();
+    }
+  }
+
+  static int time_file_dump() {
+    std::scoped_lock<std::mutex> lock(file_write_mutex);
+    print_file(librados_to_rados_time, "/tmp/osd_librados_to_rados_time.txt");
+    print_file(rados_to_librados_time, "/tmp/osd_rados_to_librados_time.txt");
+    init_times();
+    return 0;
   }
 
 
