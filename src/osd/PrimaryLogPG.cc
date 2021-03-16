@@ -1908,7 +1908,7 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
   osd->get_time_librados_to_rados(m->get_oid().name, m->get_recv_stamp().to_nsec());
 
   dout(20) << __func__ << " get oid " << m->get_oid() 
-    << " recv_complete_time " << m->get_recv_complete_stamp()
+    << " recv_complete_time " << m->get_recv_stamp()
     << osd->time_file_dump() 
     << dendl;
   
