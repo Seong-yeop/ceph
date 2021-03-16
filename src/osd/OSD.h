@@ -298,7 +298,7 @@ public:
   }
   
   static void get_time_librados_to_rados(const std::string name, const uint64_t now) {
-    if (l_count >= 1000 || librados_to_rados_time[l_count].used ==1)
+    if (l_count >= 1000)
       time_file_dump();
       return ;
     librados_to_rados_time[l_count].used = 1;
@@ -308,7 +308,7 @@ public:
 
   
   static void get_time_rados_to_librados(const std::string name, const uint64_t now) {
-  if (r_count >= 1000 || rados_to_librados_time[r_count].used == 1)
+  if (r_count >= 1000)
     time_file_dump();
     return ;
   rados_to_librados_time[r_count].used = 1;
