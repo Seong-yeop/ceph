@@ -305,6 +305,7 @@ public:
     librados_to_rados_time[l_count].used = 1;
     librados_to_rados_time[l_count].name = name;
     librados_to_rados_time[l_count].tv_nsec = now;
+    l_count++;
   }
 
   
@@ -316,6 +317,7 @@ public:
   rados_to_librados_time[r_count].used = 1;
   rados_to_librados_time[r_count].name = name;
   rados_to_librados_time[r_count].tv_nsec = now;
+  r_count++;
   }
   
   static void init_times() {
