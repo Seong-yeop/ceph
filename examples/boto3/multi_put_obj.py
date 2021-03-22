@@ -68,5 +68,5 @@ for size in sizes:
     avg = np.mean(latencyResult)
     
     print("Done op: %d" % (len(latencyResult)))
-    print("objectSize %d, latency (ms): %f, throughput (MB/s): %f" % (size, avg*10**3, num_op*size/(np.sum(latencyResult))/2**10))
+    print("objectSize %d, latency (ms): %f, throughput (MB/s): %f" % (size, avg*10**3, num_op*size/(np.sum(latencyResult))/2**20))
 
