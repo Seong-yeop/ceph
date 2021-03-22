@@ -7,6 +7,8 @@ import time
 import numpy as np
 import pickle
 import os
+import parmap
+import multiprocessing
 
 def js_print(arg):
     print(json.dumps(arg, indent=2))
@@ -19,37 +21,36 @@ def makeRandomBytes(size):
 # endpoint and keys from vstart
 endpoint = 'http://172.31.4.82:80'
 ###endpoint = 'http://127.0.0.1:8000'
-access_key="26FFHUKNFD1OX8IPMALS"
-secret_key="Xgogle9xYvUVNTR3T2mcgfDJLZGaDYOrbTqjb1Jx"
+access_key="14PQ0HEUG876CL989VMF"
+secret_key="tY2vafwxBWjszKkAHvCu0szTihBoUZL7N5nflAUQ"
 writeData = bytes()
-size = 2**20 # 4KB
-num_op = 100
+sizes = [4*2**10, ]#16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20]
+num_op = 10000
 latencyResults = {}
 
-conn = boto3.resource('s3',
+client = boto3.client('s3',
         endpoint_url=endpoint,
         aws_access_key_id=access_key,
         aws_secret_access_key=secret_key)
 
+resp = client.create_bucket(Bucket="my-new-bucket")
 
-bucket = conn.Bucket('my-new-bucket')
-bucket.create()
-
-writeData = makeRandomBytes(size)
-
-for i in range(num_op):
-    start = time.perf_counter()
-    bucket.put_object(Bucket="my-new-bucket",
-            Key="test" + str(i),
-            Body=writeData,
-            )
-    end = time.perf_counter() - start
-    latencyResults[str(i)] = str(end)            
-
-print(latencyResults)
-with open('latency', 'ab') as fw:
-    for key, value in latencyResults.items():
-        fw.write(key.encode())
-        fw.write('\t'.encode())
-        fw.write(value.encode())
-        fw.write('\n'.encode())
+for size in sizes:
+    writeData = makeRandomBytes(size)
+    print("PUTOBJ SIZE: ", size)
+    for i in range(num_op):
+        start = time.perf_counter()
+        resp = client.put_object(Bucket="my-new-bucket",
+                Key="test"+ str(size) + "-" +str(i),
+                Body=writeData,
+                )
+        elasped_time = time.perf_counter() - start
+        latencyResults[str(i)] = elasped_time
+    count = 0
+    _sum = 0
+    for key in latencyResults:
+        count += 1
+        _sum += latencyResults[key]
+    latencyResults = {}
+        
+    print("objectSize %d, latency (ms): %f" % (size, (_sum/count)*10**3 ))

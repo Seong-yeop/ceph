@@ -1592,8 +1592,10 @@ class RGWLatency {
 
     static void get_time_client_to_rgw(const std::string name, const struct timespec ts) {
       std::scoped_lock<std::mutex> lock(lock1);
-      if (client_to_rgw_count >= 1000 || client_to_rgw_time[client_to_rgw_count].used == 1)
+      if (client_to_rgw_count >= 1000) {
+        time_file_dump1();
         return ;
+      }
       client_to_rgw_time[client_to_rgw_count].used = 1;
       //size_t length = name.copy(client_to_rgw_time[client_to_rgw_count].name, name.length());
       //client_to_rgw_time[client_to_rgw_count].name[length] = '\n';
@@ -1604,8 +1606,10 @@ class RGWLatency {
     }
     static void get_time_rgw_to_client(const std::string name, const struct timespec ts) {
       std::scoped_lock<std::mutex> lock(lock2);
-      if (rgw_to_client_count >= 1000 || rgw_to_client_time[rgw_to_client_count].used == 1)
+        if (rgw_to_client_count >= 1000) {
+          time_file_dump2();
         return ;
+      }
       rgw_to_client_time[rgw_to_client_count].used = 1;
       rgw_to_client_time[rgw_to_client_count].name = name;
       rgw_to_client_time[rgw_to_client_count].tv_sec = ts.tv_sec;
@@ -1614,7 +1618,7 @@ class RGWLatency {
     }
     static void get_time_rgw_to_rados(const std::string name, const struct timespec ts) {
       std::scoped_lock<std::mutex> lock(lock3);
-      if (rgw_to_rados_count >= 1000 || rgw_to_rados_time[rgw_to_rados_count].used == 1)
+      if (rgw_to_rados_count >= 1000)
         return ;
       
       rgw_to_rados_time[rgw_to_rados_count].used = 1;
@@ -1627,7 +1631,7 @@ class RGWLatency {
     }
     static void get_time_rados_to_rgw(const std::string name, const struct timespec ts) {
       std::scoped_lock<std::mutex> lock(lock4);
-      if (rados_to_rgw_count >= 1000 || rados_to_rgw_time[rados_to_rgw_count].used == 1)
+      if (rados_to_rgw_count >= 1000)
         return ;
       rados_to_rgw_time[rados_to_rgw_count].used = 1;
       size_t length = name.copy(rados_to_rgw_time[rados_to_rgw_count]._name, name.length());

@@ -22,7 +22,7 @@
 #include "services/svc_zone_utils.h"
 
 #define dout_subsys ceph_subsys_rgw
-//#define BREAKDOWN
+#define BREAKDOWN
 
 using rgw::dmclock::Scheduler;
 
@@ -187,7 +187,9 @@ int process_request(rgw::sal::RGWRadosStore* store,
                     int* http_ret)
 {
   int ret = client_io->init(g_ceph_context);
-  struct timespec now;
+  utime_t start = ceph_clock_now();
+  utime_t now;
+  utime_t elapsed_time;
 
   dout(1) << __func__ << " ====== starting new request req=" << hex << req << dec
 	  << " =====" << dendl;
@@ -259,12 +261,6 @@ int process_request(rgw::sal::RGWRadosStore* store,
       }
     }
   }
-#ifdef BREAKDOWN
-    now = ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now());
-    dout(20) << " schedule request "
-             << librados::RGWLatency::to_nsec(now.tv_sec, now.tv_nsec)
-             << dendl;
-#endif
   std::tie(ret,c) = schedule_request(scheduler, s, op);
   if (ret < 0) {
     if (ret == -EAGAIN) {
@@ -309,13 +305,14 @@ int process_request(rgw::sal::RGWRadosStore* store,
     }
 
 #ifdef BREAKDOWN
-    now = ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now());
-    dout(20) << " rgw process authenticated "
-             << librados::RGWLatency::to_nsec(now.tv_sec, now.tv_nsec)
+    now = ceph_clock_now();
+    ret = rgw_process_authenticated(handler, op, req, s, yield);
+    elapsed_time = ceph_clock_now() - now;
+    dout(20) << " [BREAKDOWN] rgw process authenticated "
+             << elapsed_time.to_nsec()
              << dendl;
 #endif
 
-    ret = rgw_process_authenticated(handler, op, req, s, yield);
     if (ret < 0) {
       abort_early(s, op, ret, handler, yield);
       goto done;
@@ -334,25 +331,13 @@ done:
     } else if (rc < 0) {
       ldpp_dout(op, 5) << "WARNING: failed to read post request script. error: " << rc << dendl;
     } else {
-#ifdef BREAKDOWN
-    now = ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now());
-    dout(20) << " lru request execute "
-             << librados::RGWLatency::to_nsec(now.tv_sec, now.tv_nsec)
-             << dendl;
-#endif
-      rc = rgw::lua::request::execute(store, rest, olog, s, op->name(), script);
+    rc = rgw::lua::request::execute(store, rest, olog, s, op->name(), script);
       if (rc < 0) {
         ldpp_dout(op, 5) << "WARNING: failed to execute post request script. error: " << rc << dendl;
       }
     }
   }
 
-#ifdef BREAKDOWN
-  now = ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now());
-  dout(20) << " client io complete request "
-           << librados::RGWLatency::to_nsec(now.tv_sec, now.tv_nsec)
-           << dendl;
-#endif
   try {
     client_io->complete_request();
   } catch (rgw::io::Exception& e) {
@@ -382,29 +367,11 @@ done:
   }
 
 
-#ifdef BREAKDOWN
-  now = ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now());
-  dout(20) << " handler put op "
-           << librados::RGWLatency::to_nsec(now.tv_sec, now.tv_nsec)
-           << dendl;
-#endif
-  if (handler)
-    handler->put_op(op);
-
-#ifdef BREAKDOWN
-  now = ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now());
-  dout(20) << " put handler "
-           << librados::RGWLatency::to_nsec(now.tv_sec, now.tv_nsec)
-           << dendl;
-#endif
+  if (handler) {
+  handler->put_op(op);
+  }
+  
   rest->put_handler(handler);
-
-#ifdef BREAKDOWN
-  now = ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now());
-  dout(20) << " request done time " 
-           << librados::RGWLatency::to_nsec(now.tv_sec, now.tv_nsec)
-           << dendl;
-#endif
 
   if (s->object) {
     dout(20) << " obj key: "  << s->object->get_oid() 
@@ -419,11 +386,13 @@ done:
              << dendl;
   }
   
+  utime_t elapsed_time_end = ceph_clock_now() - start;
 
   dout(1) << "====== req done req=" << hex << req << dec
 	  << " op status=" << op_ret
 	  << " http_status=" << s->err.http_ret
-	  << " latency=" << s->time_elapsed()
+          << " latency=" << s->time_elapsed()
+	  << " fine grained latency=" << elapsed_time_end.to_nsec()
 	  << " ======"
 	  << dendl;
 

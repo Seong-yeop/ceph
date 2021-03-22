@@ -8,44 +8,43 @@ import numpy as np
 import pickle
 import os
 
-def js_print(arg):
-    print(json.dumps(arg, indent=2))
-
-
-def makeRandomBytes(size):
-    random.seed(None)
-    return os.urandom(size)
 
 # endpoint and keys from vstart
 endpoint = 'http://172.31.4.82:80'
 #endpoint = 'http://127.0.0.1:8000'
-access_key="26FFHUKNFD1OX8IPMALS"
-secret_key="Xgogle9xYvUVNTR3T2mcgfDJLZGaDYOrbTqjb1Jx"
-num_op = 1000
-latencyResults = {}
+access_key="14PQ0HEUG876CL989VMF"
+secret_key="tY2vafwxBWjszKkAHvCu0szTihBoUZL7N5nflAUQ"
 
-conn = boto3.resource('s3',
+sizes = [ 4*2**10,] #16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20 ]
+
+# input
+obj_prefix = "test"
+num_op = 10000
+
+client = boto3.client("s3",
         endpoint_url=endpoint,
         aws_access_key_id=access_key,
-        aws_secret_access_key=secret_key)
+        aws_secret_access_key=secret_key
+        )
 
 
-bucket = conn.Bucket('my-new-bucket')
-#bucket.create()
+rand_op = [ random.randint(1,9999) for _ in range(num_op) ]
 
-for i in range(num_op):
-    start = time.perf_counter()
-    obj = conn.Object("my-new-bucket",
-            "test" + str(i),
+test_name = obj_prefix + " - read"
+latencyResults = {}
+
+for size in sizes:
+    for i in rand_op:
+        start = time.perf_counter()
+        resp =  client.get_object(Bucket="my-new-bucket",
+            Key=obj_prefix + str(size) + "-" + str(i),
             )
-    body = obj.get()['Body'].read()
-    end = time.perf_counter() - start
-    latencyResults[str(i)] = str(end)            
+        end = time.perf_counter() - start
+        latencyResults[str(i)] = end
 
-print(latencyResults)
-with open('latency', 'ab') as fw:
-    for key, value in latencyResults.items():
-        fw.write(key.encode())
-        fw.write('\t'.encode())
-        fw.write(value.encode())
-        fw.write('\n'.encode())
+    count = 0
+    _sum = 0
+    for key in latencyResults:
+        count += 1
+        _sum += latencyResults[key]
+    print("ObjectSize %d ,latency (ms): %f" % (size, (_sum/count)*10**3)) 
