@@ -19,13 +19,12 @@ def makeRandomBytes(size):
     return os.urandom(size)
 
 def put_object(input_list):
-    print("put... start ...")
     client = boto3.client('s3',
             endpoint_url=endpoint,
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key)
-
     resp = client.create_bucket(Bucket="my-new-bucket")
+
     
     latencyResults = []
     for i in input_list:
@@ -41,32 +40,37 @@ def put_object(input_list):
 
 # endpoint and keys from vstart
 endpoint = 'http://172.31.4.82:80'
-access_key="14PQ0HEUG876CL989VMF"
-secret_key="tY2vafwxBWjszKkAHvCu0szTihBoUZL7N5nflAUQ"
+access_key="WCJUNLBZHMP71O15NTMW"
+secret_key="9gMNRJLlt58xnV5kBKS4L0E6SEDnCraVFgvWbHy5"
 writeData = bytes()
-sizes = [4*2**10, 16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20]
-num_op = 10000
+sizes = [4*2**10,] #16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20]
+num_cores = [10, 20, 30, 40, 50]
 
+for num_core in num_cores:
+    print("=" * 50)
+    print("Client", num_core) 
+    num_op = 100000
+    data = list(range(num_op))
+    splited_data = np.array_split(data, num_core)
+    splited_data = [x.tolist() for x in splited_data]
 
-num_cores = 100
-data = list(range(num_op))
-splited_data = np.array_split(data, num_cores)
-splited_data = [x.tolist() for x in splited_data]
+    for size in sizes:
+        latencyResults = []
+        writeData = makeRandomBytes(size)
+        print("PUTOBJ SIZE: ", size)
 
-
-for size in sizes:
-    latencyResults = []
-    writeData = makeRandomBytes(size)
-    print("PUTOBJ SIZE: ", size)
-
-    latencyResults = parmap.map(put_object, splited_data, pm_processes=num_cores)
+        start = time.perf_counter()
+        latencyResults = parmap.map(put_object, splited_data, pm_processes=num_core)
+        elasped_time = time.perf_counter() - start
         
-    latencyResult = []
-    for element in latencyResults:
-        latencyResult += element
+        latencyResult = []
+        for element in latencyResults:
+            latencyResult += element
 
-    avg = np.mean(latencyResult)
+        avg = np.mean(latencyResult)
     
-    print("Done op: %d" % (len(latencyResult)))
-    print("objectSize %d, latency (ms): %f, throughput (MB/s): %f" % (size, avg*10**3, num_op*size/(np.sum(latencyResult))/2**20))
+        print("Done op: %d" % (len(latencyResult)))
+        print("Total time (s): %f" % (elasped_time))
+        print("ObjectSize %d, Latency (ms): %f, throughput (MB/s): %f" % (size, avg*10**3, num_op*(size/2**20)/elasped_time ))
 
+    print("=" * 50)

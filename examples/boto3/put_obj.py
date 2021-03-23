@@ -21,10 +21,10 @@ def makeRandomBytes(size):
 # endpoint and keys from vstart
 endpoint = 'http://172.31.4.82:80'
 ###endpoint = 'http://127.0.0.1:8000'
-access_key="14PQ0HEUG876CL989VMF"
-secret_key="tY2vafwxBWjszKkAHvCu0szTihBoUZL7N5nflAUQ"
+access_key="NHR38N5CCWT6WF7ZOW6N"
+secret_key="2iehZ6NU7sO7RgA4x4NxyG9hN1LHAt45ntu0e6YA"
 writeData = bytes()
-sizes = [4*2**10, ]#16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20]
+sizes = [4*2**10, 16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20]
 num_op = 10000
 latencyResults = {}
 
@@ -41,7 +41,7 @@ for size in sizes:
     for i in range(num_op):
         start = time.perf_counter()
         resp = client.put_object(Bucket="my-new-bucket",
-                Key="test"+ str(size) + "-" +str(i),
+                Key="obj"+ str(size) + "-" +str(i),
                 Body=writeData,
                 )
         elasped_time = time.perf_counter() - start

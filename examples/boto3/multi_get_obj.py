@@ -12,7 +12,6 @@ import multiprocessing
 
 
 def get_object(input_list):
-    print("get... start...")
     client = boto3.client("s3",
             endpoint_url=endpoint,
             aws_access_key_id=access_key,
@@ -31,33 +30,36 @@ def get_object(input_list):
         
     return latencyResults
     
-
 # endpoint and keys from vstart
 endpoint = 'http://172.31.4.82:80'
-#endpoint = 'http://127.0.0.1:8000'
-access_key="14PQ0HEUG876CL989VMF"
-secret_key="tY2vafwxBWjszKkAHvCu0szTihBoUZL7N5nflAUQ"
+access_key="WCJUNLBZHMP71O15NTMW"
+secret_key="9gMNRJLlt58xnV5kBKS4L0E6SEDnCraVFgvWbHy5"
 
-sizes = [ 4*2**10,] #16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20 ]
-num_op = 1000
+sizes = [ 4*2**10, 16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20 ]
 obj_prefix = "obj"
 
-num_cores = 1000
+num_cores = [50]
 
-data = [ random.randint(1,9999) for _ in range(num_op) ]
-splited_data = np.array_split(data, num_cores)
-splited_data = [x.tolist() for x in splited_data]
+for num_core in num_cores:
+    print("=" * 50)
+    print("client :", num_core)
+    num_op = 1000
+    data = [ random.randint(1,9999) for _ in range(num_op) ]
+    splited_data = np.array_split(data, num_core)
+    splited_data = [x.tolist() for x in splited_data]
+    for size in sizes:
+        latencyResults = []
+        start = time.perf_counter() 
+        latencyResults = parmap.map(get_object, splited_data, pm_processes=num_core)
+        elasped_time = time.perf_counter() - start
 
-for size in sizes:
-    latencyResults = []
-    
-    latencyResults = parmap.map(get_object, splited_data, pm_processes=num_cores)
+        latencyResult = []
+        for element in latencyResults:
+            latencyResult += element
 
-    latencyResult = []
-    for element in latencyResults:
-        latencyResult += element
+        avg = np.mean(latencyResult)
 
-    avg = np.mean(latencyResult)
-
-    print("Done op %d" % (len(latencyResult)))
-    print("ObjectSize %d ,Latency (ms): %f, Throughput (MB/s)" % (size, avg*10**3, num_op*size/(np.sum(latencyResult))/2**20)) 
+        print("Done op %d" % (len(latencyResult)))
+        print("Total time (s): %f" % (elasped_time))
+        print("ObjectSize %d ,Latency (ms): %f, Throughput (MB/s) %f " % (size, avg*10**3, num_op*(size/2**20)/elasped_time)) 
+    print("=" * 50)

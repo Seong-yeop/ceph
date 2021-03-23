@@ -1,0 +1,135 @@
+==================================================
+Client 10
+PUTOBJ SIZE:  4096
+Done op: 10000
+Total time (s): 10.243602
+ObjectSize 4096, Latency (ms): 9.957215, throughput (MB/s): 3.813356
+PUTOBJ SIZE:  16384
+Done op: 10000
+Total time (s): 9.549564
+ObjectSize 16384, Latency (ms): 9.240099, throughput (MB/s): 16.362003
+PUTOBJ SIZE:  65536
+Done op: 10000
+Total time (s): 11.681823
+ObjectSize 65536, Latency (ms): 11.421738, throughput (MB/s): 53.501923
+PUTOBJ SIZE:  262144
+Done op: 10000
+Total time (s): 13.549135
+ObjectSize 262144, Latency (ms): 13.220631, throughput (MB/s): 184.513627
+PUTOBJ SIZE:  1048576
+Done op: 10000
+Total time (s): 23.212657
+ObjectSize 1048576, Latency (ms): 22.735381, throughput (MB/s): 430.799463
+PUTOBJ SIZE:  4194304
+Done op: 10000
+Total time (s): 60.981432
+ObjectSize 4194304, Latency (ms): 60.195829, throughput (MB/s): 655.937365
+==================================================
+==================================================
+Client 20
+PUTOBJ SIZE:  4096
+Done op: 10000
+Total time (s): 9.769851
+ObjectSize 4096, Latency (ms): 18.478260, throughput (MB/s): 3.998270
+PUTOBJ SIZE:  16384
+Done op: 10000
+Total time (s): 9.353227
+ObjectSize 16384, Latency (ms): 17.668489, throughput (MB/s): 16.705464
+PUTOBJ SIZE:  65536
+Done op: 10000
+Total time (s): 8.993147
+ObjectSize 65536, Latency (ms): 17.033643, throughput (MB/s): 69.497360
+PUTOBJ SIZE:  262144
+Done op: 10000
+Total time (s): 10.692782
+ObjectSize 262144, Latency (ms): 20.457955, throughput (MB/s): 233.802586
+PUTOBJ SIZE:  1048576
+Done op: 10000
+Total time (s): 19.065652
+ObjectSize 1048576, Latency (ms): 36.949302, throughput (MB/s): 524.503435
+PUTOBJ SIZE:  4194304
+Done op: 10000
+Total time (s): 49.628475
+ObjectSize 4194304, Latency (ms): 97.909117, throughput (MB/s): 805.988905
+==================================================
+==================================================
+Client 30
+PUTOBJ SIZE:  4096
+Done op: 10000
+Total time (s): 4.526389
+ObjectSize 4096, Latency (ms): 11.806273, throughput (MB/s): 8.629948
+PUTOBJ SIZE:  16384
+Done op: 10000
+Total time (s): 4.523508
+ObjectSize 16384, Latency (ms): 11.922336, throughput (MB/s): 34.541776
+PUTOBJ SIZE:  65536
+Done op: 10000
+Total time (s): 5.015842
+ObjectSize 65536, Latency (ms): 13.171039, throughput (MB/s): 124.605195
+PUTOBJ SIZE:  262144
+Done op: 10000
+Total time (s): 5.639171
+ObjectSize 262144, Latency (ms): 15.122508, throughput (MB/s): 443.327613
+PUTOBJ SIZE:  1048576
+Done op: 10000
+Total time (s): 11.504611
+ObjectSize 1048576, Latency (ms): 32.617779, throughput (MB/s): 869.216704
+PUTOBJ SIZE:  4194304
+Done op: 10000
+Total time (s): 47.547372
+ObjectSize 4194304, Latency (ms): 139.073896, throughput (MB/s): 841.266259
+==================================================
+==================================================
+Client 40
+PUTOBJ SIZE:  4096
+Done op: 10000
+Total time (s): 2.985857
+ObjectSize 4096, Latency (ms): 9.018220, throughput (MB/s): 13.082507
+PUTOBJ SIZE:  16384
+Done op: 10000
+Total time (s): 3.008237
+ObjectSize 16384, Latency (ms): 9.187962, throughput (MB/s): 51.940724
+PUTOBJ SIZE:  65536
+Done op: 10000
+Total time (s): 3.155954
+ObjectSize 65536, Latency (ms): 9.653397, throughput (MB/s): 198.038389
+PUTOBJ SIZE:  262144
+Done op: 10000
+Total time (s): 4.170632
+ObjectSize 262144, Latency (ms): 13.729540, throughput (MB/s): 599.429576
+PUTOBJ SIZE:  1048576
+Done op: 10000
+Total time (s): 12.631292
+ObjectSize 1048576, Latency (ms): 39.380086, throughput (MB/s): 791.684633
+PUTOBJ SIZE:  4194304
+Done op: 10000
+Total time (s): 51.861274
+ObjectSize 4194304, Latency (ms): 203.743789, throughput (MB/s): 771.288413
+==================================================
+==================================================
+Client 50
+PUTOBJ SIZE:  4096
+Done op: 10000
+Total time (s): 2.382887
+ObjectSize 4096, Latency (ms): 10.543183, throughput (MB/s): 16.392929
+PUTOBJ SIZE:  16384
+Done op: 10000
+Total time (s): 2.449142
+ObjectSize 16384, Latency (ms): 10.822447, throughput (MB/s): 63.797843
+PUTOBJ SIZE:  65536
+Done op: 10000
+Total time (s): 2.611407
+ObjectSize 65536, Latency (ms): 11.780113, throughput (MB/s): 239.334582
+PUTOBJ SIZE:  262144
+Done op: 10000
+Total time (s): 3.550794
+ObjectSize 262144, Latency (ms): 16.404704, throughput (MB/s): 704.067836
+PUTOBJ SIZE:  1048576
+Done op: 10000
+Total time (s): 11.720249
+ObjectSize 1048576, Latency (ms): 56.686725, throughput (MB/s): 853.224160
+PUTOBJ SIZE:  4194304
+Done op: 10000
+Total time (s): 52.069768
+ObjectSize 4194304, Latency (ms): 256.096887, throughput (MB/s): 768.200083
+==================================================

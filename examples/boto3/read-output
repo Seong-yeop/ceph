@@ -1,0 +1,105 @@
+==================================================
+client : 10
+Done op 1000
+Total time (s): 0.334406
+ObjectSize 4096 ,Latency (ms): 2.493808, Throughput (MB/s) 11.681155 
+Done op 1000
+Total time (s): 0.363959
+ObjectSize 16384 ,Latency (ms): 2.740788, Throughput (MB/s) 42.930606 
+Done op 1000
+Total time (s): 0.359731
+ObjectSize 65536 ,Latency (ms): 2.764741, Throughput (MB/s) 173.740822 
+Done op 1000
+Total time (s): 0.420537
+ObjectSize 262144 ,Latency (ms): 3.367522, Throughput (MB/s) 594.477440 
+Done op 1000
+Total time (s): 0.653381
+ObjectSize 1048576 ,Latency (ms): 5.657495, Throughput (MB/s) 1530.500921 
+Done op 1000
+Total time (s): 1.931750
+ObjectSize 4194304 ,Latency (ms): 18.217254, Throughput (MB/s) 2070.661301 
+==================================================
+==================================================
+client : 20
+Done op 1000
+Total time (s): 0.263325
+ObjectSize 4096 ,Latency (ms): 3.201969, Throughput (MB/s) 14.834340 
+Done op 1000
+Total time (s): 0.261264
+ObjectSize 16384 ,Latency (ms): 3.088846, Throughput (MB/s) 59.805376 
+Done op 1000
+Total time (s): 0.278849
+ObjectSize 65536 ,Latency (ms): 3.505848, Throughput (MB/s) 224.135402 
+Done op 1000
+Total time (s): 0.281409
+ObjectSize 262144 ,Latency (ms): 3.567378, Throughput (MB/s) 888.386620 
+Done op 1000
+Total time (s): 0.523356
+ObjectSize 1048576 ,Latency (ms): 8.060370, Throughput (MB/s) 1910.746187 
+Done op 1000
+Total time (s): 1.853692
+ObjectSize 4194304 ,Latency (ms): 32.822803, Throughput (MB/s) 2157.855725 
+==================================================
+==================================================
+client : 30
+Done op 1000
+Total time (s): 0.248344
+ObjectSize 4096 ,Latency (ms): 3.313172, Throughput (MB/s) 15.729176 
+Done op 1000
+Total time (s): 0.255655
+ObjectSize 16384 ,Latency (ms): 3.452859, Throughput (MB/s) 61.117458 
+Done op 1000
+Total time (s): 0.255443
+ObjectSize 65536 ,Latency (ms): 3.584802, Throughput (MB/s) 244.672998 
+Done op 1000
+Total time (s): 0.280200
+ObjectSize 262144 ,Latency (ms): 4.207370, Throughput (MB/s) 892.221123 
+Done op 1000
+Total time (s): 0.522905
+ObjectSize 1048576 ,Latency (ms): 11.278299, Throughput (MB/s) 1912.393089 
+Done op 1000
+Total time (s): 2.100724
+ObjectSize 4194304 ,Latency (ms): 54.141082, Throughput (MB/s) 1904.105171 
+==================================================
+==================================================
+client : 40
+Done op 1000
+Total time (s): 0.255404
+ObjectSize 4096 ,Latency (ms): 3.533245, Throughput (MB/s) 15.294402 
+Done op 1000
+Total time (s): 0.259375
+ObjectSize 16384 ,Latency (ms): 3.616856, Throughput (MB/s) 60.240917 
+Done op 1000
+Total time (s): 0.259079
+ObjectSize 65536 ,Latency (ms): 3.839326, Throughput (MB/s) 241.238799 
+Done op 1000
+Total time (s): 0.280171
+ObjectSize 262144 ,Latency (ms): 4.669452, Throughput (MB/s) 892.311252 
+Done op 1000
+Total time (s): 0.545342
+ObjectSize 1048576 ,Latency (ms): 14.630756, Throughput (MB/s) 1833.713249 
+Done op 1000
+Total time (s): 1.890494
+ObjectSize 4194304 ,Latency (ms): 64.605589, Throughput (MB/s) 2115.848541 
+==================================================
+==================================================
+client : 50
+Done op 1000
+Total time (s): 0.266950
+ObjectSize 4096 ,Latency (ms): 3.831675, Throughput (MB/s) 14.632891 
+Done op 1000
+Total time (s): 0.266528
+ObjectSize 16384 ,Latency (ms): 3.967477, Throughput (MB/s) 58.624295 
+Done op 1000
+Total time (s): 0.272552
+ObjectSize 65536 ,Latency (ms): 4.159764, Throughput (MB/s) 229.314133 
+Done op 1000
+Total time (s): 0.293898
+ObjectSize 262144 ,Latency (ms): 5.020385, Throughput (MB/s) 850.636424 
+Done op 1000
+Total time (s): 0.546707
+ObjectSize 1048576 ,Latency (ms): 17.356029, Throughput (MB/s) 1829.134245 
+Done op 1000
+Total time (s): 2.183500
+ObjectSize 4194304 ,Latency (ms): 93.392783, Throughput (MB/s) 1831.920899 
+==================================================
