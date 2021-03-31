@@ -38,7 +38,7 @@ secret_key="9gMNRJLlt58xnV5kBKS4L0E6SEDnCraVFgvWbHy5"
 sizes = [ 4*2**10, 16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20 ]
 obj_prefix = "obj"
 
-num_cores = [50]
+num_cores = [1]
 
 for num_core in num_cores:
     print("=" * 50)

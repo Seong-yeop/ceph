@@ -380,9 +380,11 @@ done:
     
     librados::RGWLatency::get_time_client_to_rgw(s->object->get_oid(), ceph::coarse_real_clock::to_timespec(s->time));
     librados::RGWLatency::get_time_rgw_to_client(s->object->get_oid(), ceph::coarse_real_clock::to_timespec(ceph::coarse_real_clock::now()));
+  librados::RGWLatency::get_elasped_time("rgw latency", ceph_clock_now() - start); 
 
     dout(20) << " rgw latency file dump " 
              << librados::RGWLatency::time_file_dump1()
+             << librados::RGWLatency::elasped_time_dump()
              << dendl;
   }
   

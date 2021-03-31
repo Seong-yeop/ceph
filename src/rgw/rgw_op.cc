@@ -2109,8 +2109,7 @@ void RGWGetObj::execute(optional_yield y)
     rgw_obj obj = s->object->get_obj();
     op_ret = torrent.get_torrent_file(s->object.get(), total_len, bl, obj);
     utime_t elapsed_time = ceph_clock_now() - start;
-    ldpp_dout(this, 0) << " ldpp dout [BREAKDOWN] get_torrent_file " << elapsed_time.to_nsec() << dendl;
-    dout(20) << " dout [BREAKDOWN] get_torrent_file " << elapsed_time.to_nsec() << dendl;
+    librados::RGWLatency::get_elasped_time("get_torrent_file", elapsed_time);
     if (op_ret < 0)
     {
       ldpp_dout(this, 0) << "ERROR: failed to get_torrent_file ret= " << op_ret

@@ -43,13 +43,14 @@ endpoint = 'http://172.31.4.82:80'
 access_key="WCJUNLBZHMP71O15NTMW"
 secret_key="9gMNRJLlt58xnV5kBKS4L0E6SEDnCraVFgvWbHy5"
 writeData = bytes()
-sizes = [4*2**10,] #16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20]
-num_cores = [10, 20, 30, 40, 50]
+sizes = [4*2**10, 16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20]
+#num_cores = [10, 20, 30, 40, 50]
+num_cores = [40]
 
 for num_core in num_cores:
     print("=" * 50)
     print("Client", num_core) 
-    num_op = 100000
+    num_op = 10000
     data = list(range(num_op))
     splited_data = np.array_split(data, num_core)
     splited_data = [x.tolist() for x in splited_data]

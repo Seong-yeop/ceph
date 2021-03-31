@@ -1578,6 +1578,10 @@ class RGWLatency {
     inline static std::mutex lock4;
     inline static std::mutex lock5;
 
+    inline static struct obj_time elasped_time[1000] = {};
+    inline static int e_count = 0;
+
+
 
   public:
     static void set_used_zero(struct obj_time* time){
@@ -1658,6 +1662,25 @@ class RGWLatency {
       rados_to_rgw_count = 0;
     }
 
+    static void get_elasped_time(const std::string name, long time) {
+      std::scoped_lock<std::mutex> lock(lock2);
+      if (e_count >= 1000) {
+        elasped_time_dump();
+        return ;
+      }
+      elasped_time[e_count].used = 1;
+      elasped_time[e_count].name = name;
+      elasped_time[e_count].tv_nsec = time;
+      e_count++;
+    }
+
+    static void init_times() {
+      std::scoped_lock<std::mutex> lock(lock5);
+      set_used_zero(elasped_time);
+      e_count = 0;
+    }
+
+
     static uint64_t to_nsec(const time_t sec, const long nsec) {
       return (uint64_t)nsec + (uint64_t)sec * 1000000000ull;
     }
@@ -1684,6 +1707,13 @@ class RGWLatency {
         }
         f.close();
       }
+    }
+
+    static int elasped_time_dump() {
+      std::scoped_lock<std::mutex> lock(file_write_mutex);
+      print_file(elasped_time, "/tmp/elasped_time.txt");
+      init_times();
+      return 0;
     }
   
     static int time_file_dump1() {

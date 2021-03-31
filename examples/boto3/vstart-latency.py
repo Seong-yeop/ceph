@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 import boto3
 import json
 import random
@@ -32,7 +31,6 @@ conn = boto3.resource('s3',
         endpoint_url=endpoint,
         aws_access_key_id=access_key,
         aws_secret_access_key=secret_key)
-
 
 bucket = conn.Bucket('my-new-bucket')
 bucket.create()
