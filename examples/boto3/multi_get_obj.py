@@ -31,20 +31,21 @@ def get_object(input_list):
     return latencyResults
     
 # endpoint and keys from vstart
-endpoint = 'http://172.31.4.82:80'
-access_key="WCJUNLBZHMP71O15NTMW"
-secret_key="9gMNRJLlt58xnV5kBKS4L0E6SEDnCraVFgvWbHy5"
+endpoint = 'http://172.31.4.82:7480'
+access_key="3QXE8VB2A5F22CZRZWY2"
+secret_key="INy8A7W5CuiPN97IvbC71DwaWvPkUEJP6i2mZHXP"
 
-sizes = [ 4*2**10, 16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20 ]
+#sizes = [ 4*2**10, 16*2**10, 64*2**10, 256*2**10, 2**20, 4*2**20 ]
+sizes = [ 64*2**10 ]
 obj_prefix = "obj"
 
-num_cores = [1]
+num_cores = [20]
 
 for num_core in num_cores:
     print("=" * 50)
     print("client :", num_core)
-    num_op = 1000
-    data = [ random.randint(1,9999) for _ in range(num_op) ]
+    num_op = 100000
+    data = [ random.randint(1,999999) for _ in range(num_op) ]
     splited_data = np.array_split(data, num_core)
     splited_data = [x.tolist() for x in splited_data]
     for size in sizes:
